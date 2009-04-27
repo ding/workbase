@@ -1,0 +1,198 @@
+umask 022
+
+
+###
+# Options.  See zshoptions(1)
+
+# History commands are appended to the existing file instead of
+# overwriting it.
+setopt append_history
+# Don't do menu completion
+setopt no_auto_menu
+# Show possible matches if completion can't figure out what to do.
+setopt auto_list
+# Commands without arguments will first try to resume suspended programs
+# of the same name.
+setopt auto_resume
+# Puts more info in the history file
+setopt extended_history
+# Turns off C-S/C-Q flow control
+setopt no_flow_control
+# Sequential duplicate commands only get one history entry.
+setopt hist_ignore_dups
+# Do completion on <value> in foo=<value>
+setopt magic_equal_subst
+# Don't error if globbing fails; just leave the globbing chars in.
+setopt nonomatch
+# Don't bug me about it if I type 'rm *'.
+setopt rm_star_silent
+# Think about adding this.
+#setopt share_history
+
+# These were added sometime after 3.0.6, based on empirical evidence.
+if [[ $ZSH_VERSION > 3.0.6 ]]; then
+    # Print hex numbers like 0x7F instead of 16#7F
+    setopt c_bases
+    # Only the newest of a set of duplicates (regardless of sequence) is saved
+    # to file.
+    setopt hist_save_no_dups
+    # Commands are added to the history file as they are entered.
+    setopt inc_append_history
+    # Use variable width columns for completion options
+    setopt list_packed
+    # print octal numbers like 037 instead of 8#37
+    setopt octal_zeroes
+fi
+
+
+###
+# aliases
+
+# My preferred ls settings.
+if [[ -x "`whence -p dircolors`" ]]; then
+    eval `dircolors`
+    alias ls='ls -aF --color=tty'
+else
+    alias ls='ls -aF'
+fi
+
+# Used on ori
+alias mileage='emacs -nw ~/misc/mileage/`date +%Y-%m`'
+
+# Used on mithrandir
+alias qf='qf-client-svga -mem 24 +vid_mode 11 +connect quake.sol.net:27511 +password phil_g@pobox.com:UJLAFC'
+alias xqf='qf-client-x11 -mem 24 -winsize 800 600 +connect quake.sol.net:27511 +password phil_g@pobox.com:UJLAFC'
+alias diary='$EDITOR ~/misc/diary/`date +%Y-%m-%dT%H:%M`'
+alias pal='pal --color'
+
+
+###
+# Parameters.  See zshparam(1)
+
+# Extensions to ignore for completion.
+FIGNORE=".o:~"
+# Where to save my command history
+HISTFILE=~/.zsh_history
+# Remember the last 5000 commands.
+HISTSIZE=5000
+# Only ask if completion listing would scroll off screen
+LISTMAX=0
+# Check for logins/logouts every 5 minutes
+LOGCHECK=300
+# Never look at my mail spool.
+MAILCHECK=0
+# Give timing statistics for programs that take longer than a minute to
+# run.
+REPORTTIME=60
+# Save the last 3000 commands.
+SAVEHIST=3000
+# Report on any log(in|out)s not from my username on systems that I administer.
+case `hostname` in
+    mithrandir|aragorn|durin|ori|dalejr|idcam-*|d?firewall)
+	WATCH=notme
+esac
+# Format to use for watch messages.
+WATCHFMT='%n %a %l from %m at %T.'
+
+
+###
+# ZLE settings.  See zshzle(1)
+
+# Use Emacs-style bindings.
+bindkey -e
+
+
+###
+# Other environment variables.
+
+# Location of my mailbox.
+case `hostname` in
+    mithrandir|aragorn)
+        export MAIL=~/mail/incoming
+    ;;
+    ori)
+        export MAIL=~/mail/inbox
+    ;;
+esac
+# Emacs is my preferred editor.
+export EDITOR='emacsclient -t'
+# So it'll be there in the future
+export DISPLAY
+# less is my preferred pager
+export PAGER=less
+
+# Check for the existence of an SSH agent.  If none, start one.
+eval $(~/bin/start-ssh-agent)
+
+###
+# Useful functions
+
+# Show the path from a symlink to its ultimate source.
+folsym() {
+    if [[ -e $1 || -h $1 ]]; then
+	file=$1
+    else
+	file=`which $1`
+    fi
+    if [[ -e $file || -L $file ]]; then
+	if [[ -L $file ]]; then
+	    echo `ls -ld $file | perl -ane 'print $F[7]'` '->'
+	    folsym `perl -le '$file = $ARGV[0];
+			      $dest = readlink $file;
+			      if ($dest !~ m{^/}) {
+				  $file =~ s{(/?)[^/]*$}{$1$dest};
+			      } else {
+				  $file = $dest;
+			      }
+			      $file =~ s{/{2,}}{/}g;
+			      while ($file =~ s{[^/]+/\.\./}{}) {
+				  ;
+			      }
+			      $file =~ s{^(/\.\.)+}{};
+			      print $file' $file`
+
+	else
+	    ls -d $file
+	fi
+    else
+	echo $file
+    fi
+}
+
+# Remove useless files
+clean () {
+    if [ "$1" = "-r" ]; then
+	find . \( -name '#*' -o -name '*~' -o -name '.*~' -o -name 'core*' \
+	          -o -name 'dead*' \) -ok rm '{}' ';'
+    else
+	rm -i \#* *~ .*~ core* dead*
+    fi
+}
+
+# Find strings in Delphi source files.
+dfind () {
+    find ${argv[2,-1]:-.} \( -iname '*.pas' -o -iname '*.dpr' \) \
+	-exec egrep -ni -- "$1" '{}' /dev/null \; |
+    less --quit-if-one-screen
+}
+
+
+# Rename Delphi identifiers
+drename () {
+    perl -pi -e s/$1/$2/g `rgrep -il $1 ~/Shared/{Common,Custom,Projects} |
+                             egrep '(pas|dfm|dpr)$'`
+}
+
+###
+# Load the prompt stuff, unless in a dumb terminal (used by Emacs TRAMP).
+
+[ "$TERM" = "dumb" ] || . ~/.zshprompt
+
+# This seems to have been added roughly around 3.1.  Don't know the exact
+# version number.
+if [[ $ZSH_VERSION > 3.1 ]]; then
+    autoload -U compinit
+    compinit
+fi
+    
+
