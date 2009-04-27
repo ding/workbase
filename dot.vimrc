@@ -3,7 +3,7 @@
 " An example for a Japanese version vimrc file.
 " 日本語版のデフォルト設定ファイル(vimrc)
 "
-" Last Change: 09-Jun-2004.
+" Last Change: 26-Oct-2008.
 " Maintainer:  MURAOKA Taro <koron@tka.att.ne.jp>
 "
 " 解説:
@@ -76,17 +76,6 @@ endif
 " に、自動的にcp932(Windows)に設定される。UNIXでは設定されないこともあるらし
 " い。
 "
-" character encoding
-"set encoding=utf-8 " inside Vim
-"set fileencoding=utf-8 " buffer default (for new file)
-"set fileencodings=ucs-bom,iso-2022-jp-3,iso-2022-jp,eucjp-ms,euc-jisx0213,euc-jp,sjis,cp932,utf-8
-
-" end-of-line format
-"set fileformat=unix " buffer default (for new file)
-"set fileformats=unix,dos,mac " EOL format for exist files
-
-"====================================================================
-" 設定パータン１
 " 文字コードの自動認識
 if &encoding !=# 'utf-8'
   set encoding=japan
@@ -143,84 +132,6 @@ set fileformats=unix,dos,mac
 if exists('&ambiwidth')
   set ambiwidth=double
 endif
-"====================================================================
-
-" script ------------------------------------------------------------------
-" 設定パータン２
-" detection character encoding automatically
-" refer : http://www.kawaz.jp/pukiwiki/?vim#cb691f26
-"if &encoding !=# 'utf-8'
-"    set encoding=japan
-"    set fileencoding=japan
-"endif
-"if has('iconv')
-"    let s:enc_euc = 'euc-jp'
-"    let s:enc_jis = 'iso-2022-jp'
-"    " check which iconv can perform eucJP-ms
-"    if iconv("\x87\x64\x87\x6a", 'cp932', 'eucjp-ms') ==# "\xad\xc5\xad\xcb"
-"        let s:enc_euc = 'eucjp-ms'
-"        let s:enc_jis = 'iso-2022-jp-3'
-"    " check which iconv can perform JISX0213
-"    elseif iconv("\x87\x64\x87\x6a", 'cp932', 'euc-jisx0213') ==# "\xad\xc5\xad\xcb"
-"        let s:enc_euc = 'euc-jisx0213'
-"        let s:enc_jis = 'iso-2022-jp-3'
-"    endif
-"    " build fileencodings
-"    if &encoding ==# 'utf-8'
-"        let s:fileencodings_default = &fileencodings
-"        let &fileencodings = s:enc_jis .','. s:enc_euc .',cp932'
-"        let &fileencodings = &fileencodings .','. s:fileencodings_default
-"        unlet s:fileencodings_default
-"    else
-"        let &fileencodings = &fileencodings .','. s:enc_jis
-"        set fileencodings+=utf-8,ucs-2le,ucs-2
-"        if &encoding =~# '^\(euc-jp\|euc-jisx0213\|eucjp-ms\)$'
-"            set fileencodings+=cp932
-"            set fileencodings-=euc-jp
-"            set fileencodings-=euc-jisx0213
-"            set fileencodings-=eucjp-ms
-"            let &encoding = s:enc_euc
-"            let &fileencoding = s:enc_euc
-"        else
-"            let &fileencodings = &fileencodings .','. s:enc_euc
-"        endif
-"    endif
-"    " clear variables
-"    unlet s:enc_euc
-"    unlet s:enc_jis
-"endif
-" script ------------------------------------------------------------------
-
-"=============================================================
-" 設定パータン３
-" 日本語を扱うために必要
-" set encoding=japan
-"set encoding=utf-8
-" ファイルの漢字コード自動判別のために必要。(要iconv)
-"if has('iconv')
-"  set fileencodings&
-"  set fileencodings+=ucs-2le,ucs-2
-"  let s:enc_euc = 'euc-jp'
-"  let s:enc_jis = 'iso-2022-jp'
-"  " iconvがJISX0213に対応しているかをチェック
-"  if iconv("\x87\x64\x87\x6a", 'cp932', 'euc-jisx0213') ==# "\xad\xc5\xad\xcb"
-"    let s:enc_euc = 'euc-jisx0213,euc-jp'
-"    let s:enc_jis = 'iso-2022-jp-3'
-"  endif
-"  " fileencodingsを構築
-"  let &fileencodings = &fileencodings.','.s:enc_jis.',utf-8'
-"  if &encoding =~# '^euc-\%(jp\|jisx0213\)$'
-"    set fileencodings+=cp932
-"    let &encoding = s:enc_euc
-"  else
-"    let &fileencodings = &fileencodings.','.s:enc_euc
-"  endif
-"  " 定数を処分
-"  unlet s:enc_euc
-"  unlet s:enc_jis
-"endif
-"=============================================================
-
 " メッセージを日本語にする (Windowsでは自動的に判断・設定されている)
 if !(has('win32') || has('mac')) && has('multi_lang')
   if !exists('$LANG') || $LANG.'X' ==# 'X'
@@ -268,9 +179,11 @@ set smartcase
 " 編集に関する設定:
 "
 " タブの画面上での幅
-set tabstop=8
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
 " タブをスペースに展開しない (expandtab:展開する)
-set noexpandtab
+set expandtab
 " 自動的にインデントする (noautoindent:インデントしない)
 set autoindent
 " バックスペースでインデントや改行を削除できるようにする
@@ -278,7 +191,7 @@ set backspace=2
 " 検索時にファイルの最後まで行ったら最初に戻る (nowrapscan:戻らない)
 set wrapscan
 " 括弧入力時に対応する括弧を表示 (noshowmatch:表示しない)
-"set showmatch
+set showmatch
 " コマンドライン補完するときに強化されたものを使う(参照 :help wildmenu)
 set wildmenu
 " テキスト挿入中の自動折り返しを日本語に対応させる
@@ -290,13 +203,13 @@ let format_allow_over_tw = 1	" ぶら下り可能幅
 " GUI固有ではない画面表示の設定:
 "
 " 行番号を非表示 (number:表示)
-set nonumber
+set number
 " ルーラーを表示 (noruler:非表示)
 set ruler
 " タブや改行を表示 (list:表示)
-set nolist
+set list
 " どの文字でタブや改行を表示するかを設定
-"set listchars=tab:>-,extends:<,trail:-,eol:<
+set listchars=tab:>-,extends:<,trail:-,eol:<
 " 長い行を折り返して表示 (nowrap:折り返さない)
 set wrap
 " 常にステータス行を表示 (詳細は:he laststatus)
@@ -308,20 +221,7 @@ set showcmd
 " タイトルを表示
 set title
 " 画面を黒地に白にする (次行の先頭の " を削除すれば有効になる)
-colorscheme desert " (Windows用gvim使用時はgvimrcを編集すること)
-
-"---------------------------------------------------------------------------
-" display & information
-"set showtabline=2 " show tab bar always
-"set number " show line numbers
-"set noruler " not show row and column number of cursor
-"set title " display file name to edit
-"set laststatus=2 " show status line always
-"set showmode " show mode name
-"set cmdheight=1 " height of command-line is 1 row
-"set nolist " not show space characters (tab, line break)
-"set showmatch " show pair parenthesis, bracket
-"set scrolloff=3 " above and below cursor number is 3 line
+"colorscheme evening " (Windows用gvim使用時はgvimrcを編集すること)
 
 "---------------------------------------------------------------------------
 " ファイル操作に関する設定:
@@ -348,7 +248,8 @@ if has('unix') && !has('gui_running')
   elseif uname =~? "freebsd"
     set term=builtin_cons25
   elseif uname =~? "Darwin"
-    set term=beos-ansi
+    " set term=beos-ansi
+    set term=ansi
   else
     set term=builtin_xterm
   endif
@@ -374,18 +275,33 @@ if has('mac')
   set iskeyword=@,48-57,_,128-167,224-235
 endif
 
-" Copyright (C) 2004 KaoriYa/MURAOKA Taro
+"---------------------------------------------------------------------------
+" クリップボードの設定
+if has('win32') || has('mac')
+  set clipboard=unnamed
+endif
+
+"---------------------------------------------------------------------------
+" rails.vim
+let g:rails_level=4
+let g:rails_default_file="app/controllers/application.rb"
+let g:rails_default_database="sqlite3"
+
+autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
+autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
+autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
+autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
+
+"---------------------------------------------------------------------------
+" grep.vim
+let Grep_Skip_Dirs = '.svn'
+let Grep_Skip_Files = '*.bak *~'
 
 if version >= 700
   set cursorline
   hi CursorLine cterm=bold ctermbg=DarkBlue
 endif
 
-set expandtab
-set ts=4
-set sw=4
-
-"set statusline=%<[%n][%f]%m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}%y\ [POS=%04l,%04v][%p%%]
-" filename [filetype][fileencoding:fileformat][RO]?[+]? column:line/all-line[ percentage-of-buffer%]
 set statusline=[%n][%t]\ %y%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}%r%m%=%c:%l/%L[%3p%%]
-
+" Copyright (C) 2005 KaoriYa/MURAOKA Taro
+" Copyright (C) 2009 Ding
