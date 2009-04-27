@@ -1,4 +1,4 @@
-set guioptions=Bnm
+set guioptions+=Bnm
 :noremap <C-c> <C-v><C-c>
 
 :map <s-Right> gt
@@ -17,3 +17,4 @@ command ysjs set! javascript.enabled=true
 autocmd LocationChange .* :js modes.passAllKeys = /mail\.google\.com/.test(buffer.URL)
 autocmd LocationChange .* :js modes.passAllKeys = /www\.google\.com\/reader\/view/.test(buffer.URL)
 
+javascript liberator.beep = function() { return false; }
