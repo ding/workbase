@@ -1,473 +1,104 @@
-############ -*- Mode: shell-script; coding: euc-jp -*- ####
-# ~ippei/.zshrc
-#   written by kishida@imat.eng.osaka-cu.ac.jp
-# last-modified: 2006/06/14 11:35:21.
-# ½¤Àµ¡¢²þÊÑ¡¢ºÆÇÛÉÛ²¿¤Ç¤â²Ä
-# cf: man zshall, zshoptions
-############################################################
-#### É¾²ÁÍÑ¥¹¥Ú¡¼¥¹
-#autoload -U predict-on # ¥³¥Þ¥ó¥É¤ÎÍ½Â¬ÆþÎÏ(¥Ò¥¹¥È¥ê¢ª°ìÈÌÊä´°)
-#zle -N predict-on
-#zle -N predict-off
-#bindkey '^Xp' predict-on    # [C-x p] ¤ÇÍ­¸ú²½
-#bindkey '^X^p' predict-off  # [C-x C-p] ¤ÇÌµ¸ú²½
-#predict-on
-# ÌÌÇò¤¤¤ó¤À¤±¤É¡¢¥³¥Þ¥ó¥É¥é¥¤¥ó¤ÎÀèÆ¬¤ËÌá¤Ã¤ÆÊÔ½¸¤¹¤ë¤È¤­¤Ë¥«¡¼¥½¥ë°Ê¹ß¤¬Á´¤Æ¾Ã¤¨¤ë¤Î¤¬ÆñÅÀ
+export PATH=/usr/local/bin:/opt/local/bin:/opt/local/sbin:$PATH
 
-autoload -U zmv
-# % zmv '(*).jpeg' '$1.jpg'
-# % zmv '(**/)foo(*).jpeg' '$1bar$2.jpg'
-# % zmv -n '(**/)foo(*).jpeg' '$1bar$2.jpg' # ¼Â¹Ô¤»¤º¥Ñ¥¿¡¼¥óÉ½¼¨¤Î¤ß
-# % zmv '(*)' '${(L)1}; # ÂçÊ¸»ú¢ª¾®Ê¸»ú
-# % zmv -W '*.c.org' 'org/*.c' #¡Ö(*)¡×¡Ö$1¡×¤ò¡Ö*¡×¤ÇºÑ¤Þ¤»¤é¤ì¤ë
-alias mmv='noglob zmv -W'  # °ú¿ô¤Î¥¯¥©¡¼¥È¤âÌÌÅÝ¤Ê¤Î¤Ç
-# % mmv *.c.org org/*.c
-#zmv -C # °ÜÆ°¤Ç¤Ï¤Ê¤¯¥³¥Ô¡¼(zcp ¤È¤·¤Æ»È¤¦ÊýË¡¤â¤¢¤ë¤ß¤¿¤¤¤À¤±¤É)
-#zmv -L # °ÜÆ°¤Ç¤Ï¤Ê¤¯¥ê¥ó¥¯(zln ¤È¤·¤Æ»È¤¦ÊýË¡¤â¤¢¤ë¤ß¤¿¤¤¤À¤±¤É)
+# number of lines kept in history
+export HISTSIZE=10000
+# number of lines saved in the history after logout
+export SAVEHIST=10000
+# location of history
+export HISTFILE=~/.zshhistory
+# append command to history file once executed
+setopt INC_APPEND_HISTORY
 
-zstyle ':completion:*' use-compctl false # compctl·Á¼°¤ò»ÈÍÑ¤·¤Ê¤¤
+# Disable core dumps
+limit coredumpsize 0
 
-# ¥Ç¥Õ¥©¥ë¥È¤Ç¤â¥æ¡¼¥¶Ì¾¤Ï /etc/passwd ¤«¤é¡¢¥Û¥¹¥ÈÌ¾¤Ï /etc/hosts ¤«¤é> Êä´°¸õÊä¤ò»ý¤Ã¤Æ¤¯¤ë
-#zstyle ':completion:*' users-hosts bar:foo.example.com funa@daemon
+# Emacs key bind
+bindkey -e
 
-#  ½ªÎ»¥³¡¼¥É¤Ç¿§¤òÊÑ¤¨¤ë
-#PROMPT='%{%(?.$fg[green].$fg[red])%}PROMPTSTRING%{$reset_color%}'
-#¤³¤ÎÎã¤À¤È¡¢½ªÎ»¥³¡¼¥É¤¬ 0 ¤Î¤È¤­¤ÏÎÐ¿§¡¢¤½¤¦¤Ç¤Ï¤Ê¤¤¤È¤­(=°Û¾ï½ªÎ»)¤ÏÀÖ¿§¤Ë¤Ê¤ë¡£
+# set the del key to back delete
+bindkey "\e[3~" delete-char
 
- 
-############################################################
+WORDCHARS='*?_-[]~=&;!#$%^(){}<>'
 
-# redo?
-# ¥á¥â
-# cd -[tab] ¤Ç¥Ç¥£¥ì¥¯¥È¥ê¥¹¥¿¥Ã¥¯¤ò¸Æ¤Ó½Ð¤»¤ë
-# <1-20> ¥Ñ¥¿¡¼¥ó¥Þ¥Ã¥Á
-# ESC C-h ¤Ç¶èÀÚ¤êÊ¸»ú¤Þ¤Ç¤Î¥Ð¥Ã¥¯¥¹¥Ú¡¼¥¹
-# killall¥³¥Þ¥ó¥É
-# ***/ ¥·¥à¥ê¥ó¥¯¤òÃ©¤ë
-# C-x g ¥ï¥¤¥ë¥É¥«¡¼¥ÉÅ¸³«·ë²Ì¤ò¤ß¤ë
-# a=aiueo; echo $a[1] # ÇÛÎó¤Î°·¤¤
-# setopt multios(¥Ç¥Õ¥©¥ë¥È)¤ÇÊ£¿ô¥ê¥À¥¤¥ì¥¯¥È¡¢¥Ñ¥¤¥×(¡Öls > 1.txt > 2.txt | less¡×)
+# set the auto complete {{{
+setopt AUTO_LIST
+setopt AUTO_MENU
+# setopt MENU_COMPLETE
 
-#### °Ê²¼¤Ë½ñ¤«¤ì¤Æ¤Ê¤¤¥­¡¼¥Ð¥¤¥ó¥É¤Ï man zshzle ¤Î STANDARD WIDGETS ¤ò»²¾È
-# ESC-q (push-line)¥Ç¥£¥ì¥¯¥È¥ê¥¹¥¿¥Ã¥¯
-# C-x C-x       (exchange-point-and-mark)C-SPACE ¤Ç¥Þ¡¼¥¯¤·¤¿¸Ä½ê¤Ë¥¸¥ã¥ó¥×
-# ESC-T (transpose-words)°ú¿ô¤ÎÁ°¸å¸ò´¹
-# ESC-. (insert-last-word)Ä¾Á°¥³¥Þ¥ó¥É¤ÎºÇ¸å¤Î°ú¿ô¤ò¸Æ¤Ó½Ð¤¹(·«¤êÊÖ¤·»È¤¨¤ë)¡¢´Ä¶­ÊÑ¿ô _ ¤âÆ±ÍÍ
-# ESC-U (up-case-word)¥«¡¼¥½¥ë°ÌÃÖ¡ÁÃ±¸ì½ªÃ¼¤Þ¤Ç¤òÂçÊ¸»ú¤ËÊÑ¹¹
-# ESC-L (down-case-word)¥«¡¼¥½¥ë°ÌÃÖ¡ÁÃ±¸ì½ªÃ¼¤Þ¤Ç¤ò¾®Ê¸»ú¤ËÊÑ¹¹
-# ESC-' (quote-line)¥³¥Þ¥ó¥É¹ÔÁ´ÂÎ¤ò '¡Á' ¤Ç³ç¤ë
-# ESC-" (quote-region)¥Þ¡¼¥¯¤·¤¿°ÌÃÖ¡Á¥«¡¼¥½¥ë°ÌÃÖ¤ò '¡Á' ¤Ç³ç¤ë
-# (Ì¤³äÅö¤Æ)      (expand-cmd-path)¥³¥Þ¥ó¥É¤ò¥Õ¥ë¥Ñ¥¹¤ËÅ¸³«
-# C-x C-=       (what-cursor-position)¥«¡¼¥½¥ë°ÌÃÖ¤Ë¤¢¤ëÊ¸»ú¥³¡¼¥É¤ò8¡¢10¡¢16¿ÊÉ½¼¨¡¢¥«¡¼¥½¥ë°ÌÃÖ¤òÉ½¼¨
-# C-[   ESC ¤ÈÅù²Á
-# ESC-n (digit-argument)¥­¡¼ÆþÎÏ¤Î²ó¿ô»ØÄê(Îã¡§[ESC-4][ESC-0]-)
-# ESC C-_       (copy-prev-word)¥«¡¼¥½¥ë¤Îº¸¤Ë¤¢¤ëÃ±¸ì¤ò¥³¥Ô¡¼¤·¤Æ¥Ú¡¼¥¹¥È¤¹¤ë
-# C-x C-o       (overwrite-mode)ÁÞÆþ¢«¢ª¾å½ñ¤Î¥â¡¼¥ÉÀÚ¤êÂØ¤¨
+autoload -U compinit
+compinit
 
-# ¸Ä¿ÍÅª¥­¡¼¥Ð¥¤¥ó¥É¤Ë»È¤¨¤ë C-¥­¡¼¥Ð¥¤¥ó¥É
-# C-o, C-q, C-s
-# C-c, C-g ¤ÏÆþÎÏÃæ¤Î¥³¥Þ¥ó¥É¤¬¾Ã¤¨¤Æ¤·¤Þ¤¦¤Î¤ò²¿¤È¤«¤¹¤ë
-# C-i   TAB ¤Ç¤¤¤¤
-# C-w   Í×²þÎÉ
-# C-v   ÆÃ¼ìÊ¸»ú¤òÃÖ¤¯¡£C-v C-i ¤Ê¤é¥¿¥ÖÊ¸»ú¡¢C-v C-j ¤Ê¤é²þ¹ÔÊ¸»ú¤òÃÖ¤±¤ë
-# C-x ·Ï¥³¥Þ¥ó¥É¤òÄ´¤Ù¤ë¡£(C-x g ¤ß¤¿¤¤¤Ê)
-# ¢£C-t ¤ÎÊ¸»úÆþ¤ì¤«¤¨¤Ï»È¤¤¾¡¼ê¤¬ÎÉ¤¯¤Ê¤¤¤Î¤Ç¤¤¤é¤Ê¤¤ ¢ª screen ¤Ë»ÈÍÑ
-#### C-j or C-m ¤É¤Á¤é¤«¤ÇÎÉ¤¤¡£¢ª¤ï¤±¤Ç¤Ï¤Ê¤¤¡£skkinput ¤Ç C-j ¤ò»È¤¦
+# Completion caching
+# zstyle ':completion::complete:*' use-cache on
+# zstyle ':completion::complete:*' cache-path .zcache
+# zstyle ':completion:*:cd:*' ignore-parents parent pwd
 
-#### ¥á¡¼¥ë¥Á¥§¥Ã¥¯
-## autoload -U colors; colors   # ¢­¤Î¤¿¤á¤Ë¡£ÀßÄê¤·¤Æ¤Ê¤±¤ì¤Ð¤·¤Æ¤ª¤¯
-# MAILCHECK=300                 # 300ÉÃËè¤Ë¥Á¥§¥Ã¥¯
-## MAILPATH="/var/mail$USER"    # ¥Á¥§¥Ã¥¯¤¹¤ë¥á¡¼¥ë¥Ü¥Ã¥¯¥¹
-# MAILPATH="/var/mail$USER?{fg[red]}New mail"   # ¥á¥Ã¥»¡¼¥¸¤È¿§¤òÊÑ¹¹
+# Completion Options
+zstyle ':completion:*:match:*' original only
+zstyle ':completion::prefix-1:*' completer _complete
+zstyle ':completion:predict:*' completer _complete
+zstyle ':completion:incremental:*' completer _complete _correct
+zstyle ':completion:*' completer _complete _prefix _correct _prefix _match _approximate
 
-## --enable-maildir-support ¤ò»ØÄê¤·¤Æ¥³¥ó¥Ñ¥¤¥ë¤¹¤ì¤ÐMaildir ·Á¼°¤Ç¤â²ÄÇ½
-# MAILPATH="$HOME/Maildir?{fg_bold[red]}New mail in $_" # ¡Ö$_¡×¤ÏÊÑ¹¹¤µ¤ì¤¿file
-## : ¤Ç¶èÀÚ¤ì¤ÐÊ£¿ô¤Î¥á¡¼¥ë¥¹¥×¡¼¥ë¤ò¥Á¥§¥Ã¥¯¤Ç¤­¤ë
-# MAILPATH="$HOME/Maildir?{fg_bold[red]}New mail in $_:$HOME/Maildir-foo?{fg_bold[green]}New mail in $_:"
+# Path Expansion
+zstyle ':completion:*' expand 'yes'
+zstyle ':completion:*' squeeze-shlashes 'yes'
+zstyle ':completion::complete:*' '\\'
 
-# ´Ä¶­ÊÑ¿ô $TERM ¤Ï gentoo ¤òÆþ¤ì¤¿¥Ç¥Õ¥©¥ë¥È¤Ç¤Ï linux ¤Ë¤Ê¤Ã¤Æ¤¤¤ë
+zstyle ':completion:*:*:*:default' menu select
+zstyle ':completion:*:*:default' force-list always
 
-############################################################
-# ´Ä¶­ÊÑ¿ô¤Ï¼ç¤Ë ~/.zshenv ¤Ëµ­½Ò
-# ~/.zshrc ¤Ëµ­½Ò¤¹¤ë¤Î¤Ï¡¢¥¤¥ó¥¿¥é¥¯¥Æ¥£¥Ö¥·¥§¥ë¤È¤·¤Æ¤ÎÀßÄê
-
-# ²èÌÌ¤ÎºÇÂç²½¤ÇÌá¤é¤Ê¤¯¤Ê¤ë¤Î¤¬ÉÔÊØ
-#if [ ! $TERM = "screen"  ]; then; screen; fi
-
-autoload -U colors; colors      # ${fg[red]}·Á¼°¤Î¥«¥é¡¼½ñ¼°¤òÍ­¸ú²½
-
-hosts=( localhost `hostname` )
-#printers=( lw ph clw )
-umask 002
-cdpath=( ~ )                    # cd ¤Î¥µ¡¼¥Á¥Ñ¥¹
-#fpath=($fpath ~/.zfunc )       # zsh´Ø¿ô¤Î¥µ¡¼¥Á¥Ñ¥¹
-
-#¢­¥«¥ì¥ó¥È¥Ç¥£¥ì¥¯¥È¥ê¤Ë¸õÊä¤¬¤Ê¤¤¾ì¹ç¤Î¤ß cdpath ¾å¤Î¥Ç¥£¥ì¥¯¥È¥ê¤ò¸õÊä
-zstyle ':completion:*:cd:*' tag-order local-directories path-directories
-# cf. zstyle ':completion:*:path-directories' hidden true
-# cf. cdpath ¾å¤Î¥Ç¥£¥ì¥¯¥È¥ê¤ÏÊä´°¸õÊä¤«¤é³°¤ì¤ë
-
-#¢­Êä´°»þ¤ËÂç¾®Ê¸»ú¤ò¶èÊÌ¤·¤Ê¤¤
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-
-WORDCHARS='*?_-.[]~=&;!#$%^(){}<>' #C-w ¤Ç¤ÎÃ±¸ì¶èÀÚ¤ê¤È¤·¤ÆÇ§¼±¤µ¤ì¤ëÊ¸»ú
-#        ¡Ö*?_-.[]~=/&;!#$%^(){}<>¡×¢«WORDCHARS ¤Î¥Ç¥Õ¥©¥ë¥ÈÃÍ
-
-#### history
-HISTFILE="$HOME/.zhistory"      # ÍúÎò¥Õ¥¡¥¤¥ë
-HISTSIZE=10000           # ¥á¥â¥ê¾å¤ËÊÝÂ¸¤µ¤ì¤ë $HISTFILE ¤ÎºÇÂç¥µ¥¤¥º¡©
-SAVEHIST=10000                  # ÊÝÂ¸¤µ¤ì¤ëºÇÂçÍúÎò¿ô
-
-#### option, limit, bindkey
-setopt extended_history         # ¥³¥Þ¥ó¥É¤Î³«»Ï»þ¹ï¤È·Ð²á»þ´Ö¤òÅÐÏ¿
-setopt hist_ignore_dups         # Ä¾Á°¤Î¥³¥Þ¥ó¥É¤ÈÆ±°ì¤Ê¤é¤ÐÅÐÏ¿¤·¤Ê¤¤
-setopt hist_ignore_all_dups     # ÅÐÏ¿ºÑ¥³¥Þ¥ó¥É¹Ô¤Ï¸Å¤¤Êý¤òºï½ü
-setopt hist_reduce_blanks # Í¾Ê¬¤Ê¶õÇò¤ÏµÍ¤á¤ÆÅÐÏ¿(¶õÇò¿ô°ã¤¤ÅÐÏ¿¤òËÉ¤°)
-#setopt append_history  # zsh ¤ò½ªÎ»¤µ¤»¤¿½ç¤Ë¥Õ¥¡¥¤¥ë¤Ëµ­Ï¿(¥Ç¥Õ¥©¥ë¥È)
-#setopt inc_append_history # Æ±¾å¡¢¤¿¤À¤·¥³¥Þ¥ó¥É¤òÆþÎÏ¤·¤¿»þÅÀ¤Çµ­Ï¿
-setopt share_history    # ¥Ò¥¹¥È¥ê¤Î¶¦Í­¡£(append·Ï¤È°Û¤Ê¤êºÆÆÉ¤ß¹þ¤ßÉÔÍ×¡¢¤³¤ì¤òÀßÄê¤¹¤ì¤Ð append ·Ï¤ÏÉÔÍ×)
-setopt hist_no_store            # history¥³¥Þ¥ó¥É¤ÏÅÐÏ¿¤·¤Ê¤¤
-setopt hist_ignore_space # ¥³¥Þ¥ó¥É¹ÔÀèÆ¬¤¬¶õÇò¤Î»þÅÐÏ¿¤·¤Ê¤¤(Ä¾¸å¤Ê¤é¤Ð¸Æ¤Ù¤ë)
-
-
-setopt list_packed              # Êä´°¸õÊä¥ê¥¹¥È¤òµÍ¤á¤ÆÉ½¼¨
-setopt print_eight_bit          # Êä´°¸õÊä¥ê¥¹¥È¤ÎÆüËÜ¸ì¤òÅ¬ÀµÉ½¼¨
-#setopt menu_complete  # 1²óÌÜ¤ÎTAB ¤ÇÊä´°¸õÊä¤òÁÞÆþ¡£É½¼¨¤À¤±¤ÎÊý¤¬¹¥¤­
-setopt no_clobber               # ¾å½ñ¤­¥ê¥À¥¤¥ì¥¯¥È¤Î¶Ø»ß
-setopt no_unset                 # Ì¤ÄêµÁÊÑ¿ô¤Î»ÈÍÑ¤Î¶Ø»ß
-setopt no_hup                   # logout»þ¤Ë¥Ð¥Ã¥¯¥°¥é¥¦¥ó¥É¥¸¥ç¥Ö¤ò kill ¤·¤Ê¤¤
-setopt no_beep                  # ¥³¥Þ¥ó¥ÉÆþÎÏ¥¨¥é¡¼¤ÇBEEP¤òÌÄ¤é¤µ¤Ê¤¤
-
-setopt extended_glob            # ³ÈÄ¥¥°¥í¥Ö
-setopt numeric_glob_sort        # ¿ô»ú¤ò¿ôÃÍ¤È²ò¼á¤·¤Æ¾º½ç¥½¡¼¥È¤Ç½ÐÎÏ
-setopt auto_cd                  # Âè1°ú¿ô¤¬¥Ç¥£¥ì¥¯¥È¥ê¤À¤È cd ¤òÊä´°
-setopt correct                  # ¥¹¥Ú¥ë¥ß¥¹Êä´°
-setopt no_checkjobs             # exit »þ¤Ë¥Ð¥Ã¥¯¥°¥é¥¦¥ó¥É¥¸¥ç¥Ö¤ò³ÎÇ§¤·¤Ê¤¤
-#setopt ignore_eof              # C-d¤Çlogout¤·¤Ê¤¤(C-d¤òÊä´°¤Ç»È¤¦¿ÍÍÑ)
-setopt pushd_to_home        # °ú¿ô¤Ê¤·pushd¤Ç$HOME¤ËÌá¤ë(Ä¾Á°dir¤Ø¤Ï cd - ¤Ç)
-setopt pushd_ignore_dups        # ¥Ç¥£¥ì¥¯¥È¥ê¥¹¥¿¥Ã¥¯¤Ë½ÅÊ£¤¹¤ëÊª¤Ï¸Å¤¤Êý¤òºï½ü
-#setopt pushd_silent   # pushd, popd ¤ÎÅÙ¤Ë¥Ç¥£¥ì¥¯¥È¥ê¥¹¥¿¥Ã¥¯¤ÎÃæ¿È¤òÉ½¼¨¤·¤Ê¤¤
-setopt interactive_comments     # ¥³¥Þ¥ó¥ÉÆþÎÏÃæ¤Î¥³¥á¥ó¥È¤òÇ§¤á¤ë
-#setopt rm_star_silent          # rm * ¤ÇËÜÅö¤ËÎÉ¤¤¤«Ê¹¤«¤º¤Ë¼Â¹Ô
-#setopt rm_star_wait            # rm * ¤Î»þ¤Ë 10ÉÃ´Ö²¿¤â¤·¤Ê¤¤
-#setopt chase_links             # ¥ê¥ó¥¯Àè¤Î¥Ñ¥¹¤ËÊÑ´¹¤·¤Æ¤«¤é¼Â¹Ô¡£
-# setopt sun_keyboard_hack      # SUN¥­¡¼¥Ü¡¼¥É¤Ç¤ÎÉÑ½Ð typo ` ¤ò¥«¥Ð¡¼¤¹¤ë
-
-
-#limit   coredumpsize    0       # ¥³¥¢¥Õ¥¡¥¤¥ë¤òÅÇ¤«¤Ê¤¤¤è¤¦¤Ë¤¹¤ë
-
-stty    erase   '^H'
-stty    intr    '^C'
-stty    susp    '^Z'
-
-#### bindkey
-# bindkey "³äÅö¤Æ¤¿¤¤¥­¡¼" ¼Â¹Ô¤µ¤»¤ëµ¡Ç½¤ÎÌ¾Á°
-bindkey -e    # emacs É÷¥­¡¼¥Ð¥¤¥ó¥É(´Ä¶­ÊÑ¿ô EDITOR ¤âÈ¿±Ç¤¹¤ë¤¬¡¢¤³¤Ã¤Á¤¬Í¥Àè)
-bindkey '^I'    complete-word   # complete on tab, leave expansion to _expand
-
-bindkey '^P' history-beginning-search-backward # ÀèÆ¬¥Þ¥Ã¥Á¤Î¥Ò¥¹¥È¥ê¥µ¡¼¥Á
-bindkey '^N' history-beginning-search-forward # ÀèÆ¬¥Þ¥Ã¥Á¤Î¥Ò¥¹¥È¥ê¥µ¡¼¥Á
-
-# tcshÉ÷ÀèÆ¬¥Þ¥Ã¥Á¤Î¥Ò¥¹¥È¥ê¥µ¡¼¥Á(¥«¡¼¥½¥ë¤¬¹ÔËö)
-# ÉÔÊØ¤È»×¤¦¡£¥«¡¼¥½¥ë°ÌÃÖ¤òÊÔ½¸¤¹¤ë¤³¤È¤âÂ¿¤¤¤·¡¢¹ÔËö¤Ø¤Ï C-e ¤Ç¤¹¤°Èô¤Ù¤ë¤·
-# autoload history-search-end
-# zle -N history-beginning-search-backward-end history-search-end
-# zle -N history-beginning-search-forward-end history-search-end
-# bindkey "^P" history-beginning-search-backward-end
-# bindkey "^N" history-beginning-search-forward-end
-
-# run-help ¤¬¸Æ¤Ð¤ì¤¿»þ¡¢zsh ¤ÎÆâÉô¥³¥Þ¥ó¥É¤Î¾ì¹ç¤Ï³ºÅö¤¹¤ë zsh ¤Î¥Þ¥Ë¥å¥¢¥ëÉ½¼¨
-[ -n "`alias run-help`" ] && unalias run-help
-autoload run-help
-
-#### completion
-_cache_hosts=(localhost $HOST hashish loki3 mercury
-  Li He Pt Au Ti{1,2} Ni{1,2} Co{1..8} Zn{1..8}
-  192.168.0.1 192.168.1.1
-)
-#_cache_hosts=(`perl -ne  'if (/^([a-zA-Z0-9.-]+)/) { print "$1\n";}' ~/.ssh/known_hosts`)
-# ¢¬(_cache_hosts) ~/.ssh/known_hosts ¤«¤é¼«Æ°Åª¤Ë¼èÆÀ¤¹¤ë
-
-autoload -U compinit; compinit -u
-compdef _tex platex             # platex ¤Ë .tex ¤ò
-
-
-############################################################
-## ¥×¥í¥ó¥×¥ÈÀßÄê
-unsetopt promptcr       # ²þ¹Ô¤Î¤Ê¤¤½ÐÎÏ¤ò¥×¥í¥ó¥×¥È¤Ç¾å½ñ¤­¤¹¤ë¤Î¤òËÉ¤°
-setopt prompt_subst             # ESC¥¨¥¹¥±¡¼¥×¤òÍ­¸ú¤Ë¤¹¤ë
-
-#if [ $TERM = "kterm-color" ] || [ $TERM = "xterm" ]; then
-if [ $COLORTERM = 1 ]; then
-  if [ $UID = 0 ] ; then 
-    PSCOLOR='00;04;31'
-  else
-    if [ $host = 'hashish' ] ; then
-        PSCOLOR='00;04;35'
-    elif [ $host = 'mercury' ] ; then
-        PSCOLOR='00;04;36'
-    elif [ $host = 'Pt' ] ; then
-        PSCOLOR='00;04;32'
-    else
-        PSCOLOR='00;04;33'
-    fi
-  fi
-  RPS1=$'%{\e[${PSCOLOR}m%}[%~]%{\e[00m%}'    # ±¦¥×¥í¥ó¥×¥È
-  #PS1=$'%{\e]2; %m:%~ \a'$'\e]1;%%: %~\a%}'$'\n%{\e[${PSCOLOR}m%}%n@%m %#%{\e[00m%} '
-  #PS1=$'%{\e]2; %m:%~ \a'$'\e]1;%%: %~\a%}'$'\n%{\e[${PSCOLOR}m%}%n@%m ${WINDOW:+"[$WINDOW]"}%#%{\e[00m%} ' #kterm
-  PS1=$'%{\e]2; %m:%~ \a'$'\e]1;%%: %~\a%}'$'\n%{\e[${PSCOLOR}m%}%n@%m ${WINDOW:+"[$WINDOW]"}%#%{\e[00m%} '
-  # 1¸ÄÌÜ¤Î $'...' ¤Ï ¡Ö\e]2;¡Ökterm ¤Î¥¿¥¤¥È¥ë¡×\a¡×
-  # 2¸ÄÌÜ¤Î $'...' ¤Ï ¡Ö\e]1;¡Ö¥¢¥¤¥³¥ó¤Î¥¿¥¤¥È¥ë¡×\a¡×
-  # 3¸ÄÌÜ¤Î $'...' ¤¬¥×¥í¥ó¥×¥È
-  #
-  # \e ¤ò ESC ¥³¡¼¥É(¤ÇÃÖ¤¯É¬Í×¤¬¤¢¤ë¤«¤â
-  # emacs ¤Ç¤Ï C-q ESC, vi ¤Ç¤Ï C-v ESC ¤ÇÆþÎÏ¤¹¤ë
-  #       \e[00m  ½é´ü¾õÂÖ¤Ø
-  #       \e[01m  ÂÀ»ú    (0¤Ï¾ÊÎ¬²ÄÇ½¤Ã¤Ý¤¤)
-  #       \e[04m  ¥¢¥ó¥À¡¼¥é¥¤¥ó
-  #       \e[05m  blink(ÂÀ»ú)
-  #       \e[07m  È¿Å¾
-  #       \e[3?m  Ê¸»ú¿§¤ò¤«¤¨¤ë
-  #       \e[4?m  ÇØ·Ê¿§¤ò¤«¤¨¤ë
-  #               ?= 0:¹õ, 1:ÀÖ, 2:ÎÐ, 3:²«, 4:ÀÄ, 5:»ç, 6:¶õ, 7:Çò
-else    
-  PS1="%n@%m %~ %# "
+# GNU Colors you must have /etc/DIR_COLORS file 
+# [ -f /etc/DIR_COLORS ] && eval $(dircolors -b /etc/DIR_COLORS)
+if (which dircolors >& /dev/null) && [ -e $HOME/.dircolors ]; then
+	eval `dircolors $HOME/.dircolors` # $B?'$N@_Dj(B
 fi
+export ZLSCOLORS="${LS_COLORS}"
+zmodload zsh/complist
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 
-############################################################
-## alias & function
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}'
 
-#### less
-alias less="$PAGER"
-alias m=less
-alias -g L="| less"
-alias -g M="| less"
-alias les="less"        # for typo
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
 
+# Complete the kill command
+compdef pkill=kill
+compdef pkill=killall
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:*:*:*:processes' force-list always
+zstyle ':completion:*:processes' command 'ps -au$USER'
 
+# Group matches and Describe
+zstyle ':completion:*:matches' group 'yes'
+zstyle ':completion:*:options' description 'yes'
+zstyle ':completion:*:options' auto-description '%d'
+zstyle ':completion:*:descriptions' format $'\e[01;33m -- %d --\e[0m'
+zstyle ':completion:*:messages' format $'\e[01;35m -- %d --\e[0m'
+zstyle ':completion:*:warnings' format $'\e[01;31m -- No Matches Found --\e[0m'
+# }}}
+
+# alias
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+# alias ls='ls -F --color=auto'
+# alias ll='ls -l'
+alias grep='grep --color=auto'
+alias ee='emacsclient -t'
+alias gls='gls -F --color=auto'
 #### man
 if which jman >& /dev/null; then
-  alias man="LC_ALL=ja_JP.eucJP jman"
+	alias man="LC_ALL=ja_JP.eucJP jman"
 fi
 
-#### ps
-if [ $ARCHI = "irix" ]; then
-  alias psa='ps -ef'
-else; 
-  alias psa='ps auxw'
-fi
-function pst() {                # CPU »ÈÍÑÎ¨¤Î¹â¤¤Êý¤«¤é8¤Ä
-  psa | head -n 1
-  psa | sort -r -n +2 | grep -v "ps -auxww" | grep -v grep | head -n 8
-}
-function psm() {                # ¥á¥â¥êÀêÍ­Î¨¤Î¹â¤¤Êý¤«¤é8¤Ä
-  psa | head -n 1
-  psa | sort -r -n +3 | grep -v "ps -auxww" | grep -v grep | head -n 8
-}
-function psg() {
-  psa | head -n 1
-  psa | grep $* | grep -v "ps -auxww" | grep -v grep
-}
+# export PROMPT="[%n@%m %1/]
+# %# "
+# Prompt setting {{{
+# RPROMPT=$(echo '%{\033[31m%}%D %T%{\033[m%}')
+PROMPT=$(echo '%{\033[35m%}%M%{\033[32m%}%/
+%{\033[36m%}%n %{\033[01;31m%}>%{\033[33m%}>%{\033[35m%}>%{\033[m%} ')
+# }}}
 
-#### ls
-#### dircolor
-if (which dircolors >& /dev/null) && [ -e $HOME/.dircolors ]; then
-  eval `dircolors $HOME/.dircolors` # ¿§¤ÎÀßÄê
-fi
-if which gnuls >& /dev/null ; then
-  alias ls="gnuls -F --color=auto --show-control-char"
-  alias lscolor='gnuls -F --color=always --show-control-char'
-  # Êä´°¥ê¥¹¥È¤ò¥«¥é¡¼²½
-  zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-  #zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ¤Ç¤âÎÉ¤µ¤²
-elif [ $ARCHI = "linux" ]; then
-  alias ls="ls -F --color=auto --show-control-char"
-  alias lscolor='ls -F --color=always --show-control-char'
-  # Êä´°¥ê¥¹¥È¤ò¥«¥é¡¼²½
-  zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-else
-  # alias ls="ls -F"
-  alias ls='ls --show-control-chars --color=auto'
-  alias lscolor='ls -F'
-fi
-alias kls='ls'
-alias qls='ls' # Shift-PageUp ¤òÈ´¤±¤ë¤Î¤Ë¤Ä¤¤ q ¤òÂÇ¤Ã¤Æ¤·¤Þ¤¦¤Î¤ò²óÈò
-alias sl='ls'
-alias s='ls'
-alias lf='ls'
-alias l='ls'
-alias la='ls -a'
-alias ll='ls -al'
-function lsl() { lscolor $* | less }
-function lll() { lscolor -la $* | less }
-
-#### command
-alias df='df -h'
-if [ $ARCHI = "linux" ]; then
-  alias du='du -h --max-depth=1' # ¿Í´Ö¤ËÆÉ¤á¤ëÉ½¼¨¤Ç, ¿¼¤µ1¤Î³¬ÁØ¤Þ¤ÇÉ½¼¨
-else
-  alias du='du -h -d 1'          # ¿Í´Ö¤ËÆÉ¤á¤ëÉ½¼¨¤Ç, ¿¼¤µ1¤Î³¬ÁØ¤Þ¤ÇÉ½¼¨
-fi
-alias mv='mv -iv'
-#alias  memo    'skkfep -viesc -e jvim3 ~/memo.txt'
-function kterm() { /usr/X11R6/bin/kterm -sb -sl 500 -km euc -title kterm@$HOST $* & }
-function mlterm() { command mlterm --term=mlterm $* & }
-alias mutt='mutt -f ~/Maildir/inbox'
-alias xcalc='xcalc &'
-alias xterm='xterm &'
-#alias w3m="LANG='ja_JP.EUC' w3m -X"
-alias xinit='ssh-agent xinit'
-alias bell="echo '\a'"
-alias scr="screen -xR"
-alias view="vim -R"
-# short name
-alias h='head'
-alias t='tail'
-alias g='grep'
-alias j='jobs'
-
-## global alias
-alias -g H='| head'
-alias -g T='| tail'
-alias -g G='| grep'
-alias -g C='| cat -n'
-alias -g W='| wc'
-alias -g ....='../..'
-alias -g each_alphabet="a b c d e f g h i j k l m n o p q r s t u v w x y z"
-alias -g each_ALPHABET="A B C D E F G H I J K L M N O P Q R S T U V W X Y Z"
-alias -g each_hiragana="¤¢ ¤¤ ¤¦ ¤¨ ¤ª ¤« ¤­ ¤¯ ¤± ¤³ ¤µ ¤· ¤¹ ¤» ¤½\
-  ¤¿ ¤Á ¤Ä ¤Æ ¤È ¤Ê ¤Ë ¤Ì ¤Í ¤Î ¤Ï ¤Ò ¤Õ ¤Ø ¤Û ¤Þ ¤ß ¤à ¤á ¤â\
-  ¤ä ¤æ ¤è ¤é ¤ê ¤ë ¤ì ¤í ¤ï ¤ò ¤ó"
-alias -g each_katakana="¥¢ ¥¤ ¥¦ ¥¨ ¥ª ¥« ¥­ ¥¯ ¥± ¥³ ¥µ ¥· ¥¹ ¥» ¥½\
-  ¥¿ ¥Á ¥Ä ¥Æ ¥È ¥Ê ¥Ë ¥Ì ¥Í ¥Î ¥Ï ¥Ò ¥Õ ¥Ø ¥Û ¥Þ ¥ß ¥à ¥á ¥â\
-  ¥ä ¥æ ¥è ¥é ¥ê ¥ë ¥ì ¥í ¥ï ¥ò ¥ó"
-#for example, for i in alphabet ; mv $i* $i/
-
-
-function cd() { builtin cd $@ && ls; }
-alias cd..='cd ..'
-alias cd../='cd ..'
-function emacs() {command emacs $* &}
-alias emasc=emacs
-function gv() { command gv $* & }
-function gimp() { command gimp $* & }
-function mozzila() { command mozilla $* & }
-function xdvi() { command xdvi $* & }
-#function mpg321() { command mpg321 -s $* | esdcat & }
-#function h() { history $* | head -29 | less }
-function howm.rb () { nice command howm.rb $* -y -t -H | w3m -T text/HTML }
-alias cp='cp -iv'
-alias dos2unix="nkf --unix -O --overwrite" # euc-jp, LF
-alias unix2dos="nkf --windows -O --overwrite" # shift-jis, CRLF
-
-# bell
-function cvsup()       { command cvsup $*       ; echo '\a' }
-function make()        { command make $*        ; echo '\a' }
-function pkgdb()       { command pkgdb $*       ; echo '\a' }
-function portinstall() { command portinstall $* ; echo '\a' }
-function emerge()      { command emerge $*      ; echo '\a' }
-function rsync()       { command rsync $*       ; echo '\a' }
-function tar()         { command tar $*         ; echo '\a' }
-function ./configure() { command ./configure $* ; echo '\a' }
-
-function dd()          { command dd $*          ; echo '\a' }
-
-function rm() {
-  if [ -d ~/.trash ]; then
-    local DATE=`date "+%y%m%d-%H%M%S"`
-    mkdir ~/.trash/$DATE
-    for i in $@; do
-      # ÂÐ¾Ý¤¬ ~/.trash/ °Ê²¼¤Ê¥Õ¥¡¥¤¥ë¤Ê¤é¤Ð /bin/rm ¤ò¸Æ¤Ó½Ð¤·¤¿¤¤¤Ê
-      if [ -e $i ]; then
-        mv $i ~/.trash/$DATE/
-      else 
-        echo "$i : not found"
-      fi
-    done
-  else
-    /bin/rm $@
-  fi
-}
-
-function finalgrep () {
-  local GREPWORD=$1
-  shift
-  for i in $* ; do
-    grep --with-filename $GREPWORD $i | tail -n 1
-  done
-}
-
-function google() {
-  local str opt 
-  if [ $# != 0 ]; then # °ú¿ô¤¬Â¸ºß¤¹¤ì¤Ð
-    for i in $*; do
-      str="$str+$i"
-    done    
-    str=`echo $str | sed 's/^\+//'` #ÀèÆ¬¤Î¡Ö+¡×¤òºï½ü
-    opt='search?num=50&hl=ja&ie=euc-jp&oe=euc-jp&lr=lang_ja'
-    #opt='search?num=50&hl=ja&ie=utf-8&oe=utf-8&lr=lang_ja'
-    opt="${opt}&q=${str}"
-  fi
-  w3m http://www.google.co.jp/$opt #°ú¿ô¤¬¤Ê¤±¤ì¤Ð $opt ¤Ï¶õ¤Ë¤Ê¤ë
-  # mozilla -remote openURL\(http::/www.google.co.jp/$opt\) # Ì¤¥Æ¥¹¥È
-}
-alias ggl=google
-
-function wiki() {
-  local str
-  if [ $# = 0 ]; then # °ú¿ô¤¬Â¸ºß¤¹¤ì¤Ð
-    str="ÆÃÊÌ:Random"
-  else
-    str=$*
-  fi
-  w3m http://ja.wikipedia.org/wiki/`echo $str | nkf -w` # utf-8 ¤ËÊÑ´¹
-}
-alias wk=wiki
-
-function jpguess() { # ÆüËÜ¸ìÊ¸»ú¥³¡¼¥É¤ò¿äÂ¬
-  echo "use nkf -g"
-  #for i in $* ; do ; echo -n $i ; cat $i | coco -q ; done
-  #utf-8 ¥Õ¥¡¥¤¥ë¤ò¿©¤ï¤»¤ë¤È *sjis*unix ¤ÈÅú¤¨¤ë
-  #¸«Ê¬¤±¤Ä¤¤¤Æ¤Ø¤ó¤Ã¤Ý¤¤
-}
-
-#### time
-REPORTTIME=8                    # CPU¤ò8ÉÃ°Ê¾å»È¤Ã¤¿»þ¤Ï time ¤òÉ½¼¨
-TIMEFMT="\
-    The name of this job.             :%J
-    CPU seconds spent in user mode.   :%U
-    CPU seconds spent in kernel mode. :%S
-    Elapsed time in seconds.          :%E
-    The  CPU percentage.              :%P"
-
-#### ¥í¥°¥¤¥ó¤Î´Æ»ë
-# log ¥³¥Þ¥ó¥É¤Ç¤â¾ðÊó¤ò¸«¤ë¤³¤È¤¬¤Ç¤­¤ë
-watch=(notme) # (all:Á´°÷¡¢notme:¼«Ê¬°Ê³°¡¢¥æ¡¼¥¶Ì¾,@¥Û¥¹¥ÈÌ¾¡¢%Ã¼ËöÌ¾
-              # (Îóµó¡¨¶õÇò¶èÀÚ¤ê¡¢·Ò¤²¤Æ½ñ¤¯¤ÈAND¾ò·ï)
-LOGCHECK=60                     # ¥Á¥§¥Ã¥¯´Ö³Ö[ÉÃ]
-WATCHFMT="%(a:${fg[blue]}Hello %n [%m] [%t]:${fg[red]}Bye %n [%m] [%t])"
-# ¢¬¤Ç¤Ï¡¢a (¥í¥°¥¤¥ó¤«¥í¥°¥¢¥¦¥È¤«)¤Ç¾ò·ïÊ¬´ô¤·¤Æ¤¤¤ë
-# %(a:¿¿¤Î¥á¥Ã¥»¡¼¥¸:µ¶¤Î¥á¥Ã¥»¡¼¥¸)
-# a,l,n,m,M ¤ÇÍøÍÑ¤Ç¤­¤ë¡£
-# ¢£»È¤¨¤ëÆÃ¼ìÊ¸»ú
-# %n    ¥æ¡¼¥¶Ì¾
-# %a    ¥í¥°¥¤¥ó/¥í¥°¥¢¥¦¥È¤Ë±þ¤¸¤Æ¡Ölogged on¡×/¡Ölogged off¡×
-# %l    ÍøÍÑ¤·¤Æ¤¤¤ëÃ¼ËöÌ¾
-# %M    Ä¹¤¤¥Û¥¹¥ÈÌ¾
-# %m    Ã»¤¤¥Û¥¹¥ÈÌ¾
-# %S¡Á%s        ¡Á¤Î´Ö¤òÈ¿Å¾
-# %U¡Á%u        ¡Á¤Î´Ö¤ò¥¢¥ó¥À¡¼¥é¥¤¥ó
-# %B¡Á%b        ¡Á¤Î´Ö¤òÂÀ»ú
-# %t,%@ 12»þ´ÖÉ½µ­¤Î»þ´Ö
-# %T    24»þ´ÖÉ½µ­¤Î»þ´Ö
-# %w    ÆüÉÕ(ÍËÆü Æü)
-# %W    ÆüÉÕ(·î/Æü/Ç¯)
-# %D    ÆüÉÕ(Ç¯-·î-Æü)
-
-
-############################################################
-## ¸Ä¿Í¾ðÊó¤ò´Þ¤àÀßÄê
-if [ -e ~/.zshrc_private ]; then
-  source ~/.zshrc_private
-fi
-#### end of ~ippei/.zshrc #########################################
