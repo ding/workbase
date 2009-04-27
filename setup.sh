@@ -28,4 +28,11 @@ if [ -L $HOME/.zshrc ]
 fi
 ln -s ${pwd}/dot.zshrc $HOME/.zshrc
 
+if [ -e $HOME/.zshprompt ]
+  then rm -i $HOME/.zshprompt
+fi
+if [ -L $HOME/.zshprompt ]
+  then rm -i $HOME/.zshprompt
+fi
+ln -s ${pwd}/dot.zshprompt $HOME/.zshprompt
 exit 0
