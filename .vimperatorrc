@@ -1,0 +1,19 @@
+set guioptions=Bnm
+:noremap <C-c> <C-v><C-c>
+
+:map <s-Right> gt
+:map <s-Left> gT
+
+" open page in New Tab
+set popups=1
+
+""" == Commands ==
+command noimg set! premissions.default.image=2
+command ysimg set! premissions.default.image=1
+command nojs set! javascript.enabled=false
+command ysjs set! javascript.enabled=true
+
+" pass All key map for google reader and mail
+autocmd LocationChange .* :js modes.passAllKeys = /mail\.google\.com/.test(buffer.URL)
+autocmd LocationChange .* :js modes.passAllKeys = /www\.google\.com\/reader\/view/.test(buffer.URL)
+
