@@ -10,28 +10,27 @@ export HISTFILE=~/.zshhistory
 setopt INC_APPEND_HISTORY
 
 # Disable core dumps
-limit coredumpsize 0
+# limit coredumpsize 0
 
-# Emacs key bind
+# emacs style key binding
 bindkey -e
-
-# set the del key to back delete
+# backward delete
 bindkey "\e[3~" delete-char
-
+# chars as part of filename
 WORDCHARS='*?_-[]~=&;!#$%^(){}<>'
 
 # set the auto complete {{{
 setopt AUTO_LIST
 setopt AUTO_MENU
-# setopt MENU_COMPLETE
+setopt MENU_COMPLETE
 
 autoload -U compinit
 compinit
 
 # Completion caching
-# zstyle ':completion::complete:*' use-cache on
-# zstyle ':completion::complete:*' cache-path .zcache
-# zstyle ':completion:*:cd:*' ignore-parents parent pwd
+zstyle ':completion::complete:*' use-cache on
+zstyle ':completion::complete:*' cache-path .zcache
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
 
 # Completion Options
 zstyle ':completion:*:match:*' original only
@@ -65,8 +64,8 @@ zstyle ':completion:*:match:*' original only
 zstyle ':completion:*:approximate:*' max-errors 1 numeric
 
 # Complete the kill command
-compdef pkill=kill
-compdef pkill=killall
+# compdef pkill=kill
+# compdef pkill=killall
 zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:*:*:*:processes' force-list always
 zstyle ':completion:*:processes' command 'ps -au$USER'
