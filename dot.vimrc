@@ -6,6 +6,9 @@
 " Last Change: 26-Oct-2008.
 " Maintainer:  MURAOKA Taro <koron@tka.att.ne.jp>
 "
+" Last Change: 28-Apr-2009.
+" Maintainer:  Ding Yong <sot.ding@gmail.com>
+"
 " 解説:
 " このファイルにはVimの起動時に必ず設定される、編集時の挙動に関する設定が書
 " かれています。GUIに関する設定はgvimrcに書かかれています。
@@ -179,11 +182,11 @@ set smartcase
 " 編集に関する設定:
 "
 " タブの画面上での幅
-set tabstop=2
-set shiftwidth=2
-set softtabstop=2
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
 " タブをスペースに展開しない (expandtab:展開する)
-set expandtab
+" set expandtab
 " 自動的にインデントする (noautoindent:インデントしない)
 set autoindent
 " バックスペースでインデントや改行を削除できるようにする
@@ -203,7 +206,7 @@ let format_allow_over_tw = 1	" ぶら下り可能幅
 " GUI固有ではない画面表示の設定:
 "
 " 行番号を非表示 (number:表示)
-set number
+" set number
 " ルーラーを表示 (noruler:非表示)
 set ruler
 " タブや改行を表示 (list:表示)
@@ -221,7 +224,7 @@ set showcmd
 " タイトルを表示
 set title
 " 画面を黒地に白にする (次行の先頭の " を削除すれば有効になる)
-"colorscheme evening " (Windows用gvim使用時はgvimrcを編集すること)
+colorscheme desert " (Windows用gvim使用時はgvimrcを編集すること)
 
 "---------------------------------------------------------------------------
 " ファイル操作に関する設定:
