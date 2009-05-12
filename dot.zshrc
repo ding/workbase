@@ -88,6 +88,7 @@ alias rm='rm -i'
 alias grep='grep --color=auto'
 alias ee='emacsclient -t'
 alias gls='gls -F --color=auto'
+alias ls='ls -F --color=auto --show-control-chars'
 #### man
 if which jman >& /dev/null; then
 	alias man="LC_ALL=ja_JP.eucJP jman"
