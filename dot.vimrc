@@ -222,7 +222,7 @@ set cmdheight=2
 " コマンドをステータス行に表示
 set showcmd
 " タイトルを表示
-set title
+set notitle
 " 画面を黒地に白にする (次行の先頭の " を削除すれば有効になる)
 colorscheme desert " (Windows用gvim使用時はgvimrcを編集すること)
 
