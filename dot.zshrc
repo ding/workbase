@@ -81,13 +81,26 @@ zstyle ':completion:*:processes' command 'ps -au$USER'
 zstyle ':completion:*:matches' group 'yes'
 zstyle ':completion:*:options' description 'yes'
 zstyle ':completion:*:options' auto-description '%d'
-# zstyle ':completion:*:descriptions' format $'\e[01;33m -- %d --\e[0m'
-# zstyle ':completion:*:messages' format $'\e[01;35m -- %d --\e[0m'
-# zstyle ':completion:*:warnings' format $'\e[01;31m -- No Matches Found --\e[0m'
-zstyle ':completion:*:descriptions' format '-- %B%d%b --'
-zstyle ':completion:*:messages' format '-- %d --'
-zstyle ':completion:*:warnings' format '-- No Matches Found --'
-zstyle ':completion:*' group-name ''
+case "${OSTYPE}" in
+	freebsd*|darwin*)
+	zstyle ':completion:*:descriptions' format $'\e[01;33m -- %d --\e[0m'
+	zstyle ':completion:*:messages' format $'\e[01;35m -- %d --\e[0m'
+	zstyle ':completion:*:warnings' format $'\e[01;31m -- No Matches Found --\e[0m'
+	zstyle ':completion:*' group-name ''
+	;;
+	linux*)
+	zstyle ':completion:*:descriptions' format $'\e[01;33m -- %d --\e[0m'
+	zstyle ':completion:*:messages' format $'\e[01;35m -- %d --\e[0m'
+	zstyle ':completion:*:warnings' format $'\e[01;31m -- No Matches Found --\e[0m'
+	zstyle ':completion:*' group-name ''
+	;;
+	cygwin)
+	zstyle ':completion:*:descriptions' format '-- %B%d%b --'
+	zstyle ':completion:*:messages' format '-- %d --'
+	zstyle ':completion:*:warnings' format '-- No Matches Found --'
+	zstyle ':completion:*' group-name ''
+	;;
+esac
 # }}}
 
 # alias
