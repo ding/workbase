@@ -44,6 +44,7 @@ zstyle ':completion:*' expand 'yes'
 zstyle ':completion:*' squeeze-shlashes 'yes'
 zstyle ':completion::complete:*' '\\'
 
+# for cursor select
 zstyle ':completion:*:*:*:default' menu select
 zstyle ':completion:*:*:default' force-list always
 
@@ -54,6 +55,12 @@ if (which dircolors >& /dev/null) && [ -e $HOME/.dircolors ]; then
 fi
 export ZLSCOLORS="${LS_COLORS}"
 zmodload zsh/complist
+autoload colors
+colors
+# zmodload -a colors
+# zmodload -a autocomplete
+# zmodload -a complist
+
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 
@@ -74,9 +81,13 @@ zstyle ':completion:*:processes' command 'ps -au$USER'
 zstyle ':completion:*:matches' group 'yes'
 zstyle ':completion:*:options' description 'yes'
 zstyle ':completion:*:options' auto-description '%d'
-zstyle ':completion:*:descriptions' format $'\e[01;33m -- %d --\e[0m'
-zstyle ':completion:*:messages' format $'\e[01;35m -- %d --\e[0m'
-zstyle ':completion:*:warnings' format $'\e[01;31m -- No Matches Found --\e[0m'
+# zstyle ':completion:*:descriptions' format $'\e[01;33m -- %d --\e[0m'
+# zstyle ':completion:*:messages' format $'\e[01;35m -- %d --\e[0m'
+# zstyle ':completion:*:warnings' format $'\e[01;31m -- No Matches Found --\e[0m'
+zstyle ':completion:*:descriptions' format '-- %B%d%b --'
+zstyle ':completion:*:messages' format '-- %d --'
+zstyle ':completion:*:warnings' format '-- No Matches Found --'
+zstyle ':completion:*' group-name ''
 # }}}
 
 # alias
@@ -88,7 +99,18 @@ alias rm='rm -i'
 alias grep='grep --color=auto'
 alias ee='emacsclient -t'
 alias gls='gls -F --color=auto'
-alias ls='ls -F --color=auto --show-control-chars'
+case "${OSTYPE}" in
+	freebsd*|darwin*)
+	alias ls="ls -G -w"
+	;;
+	linux*)
+	alias ls="ls --color"
+	;;
+	cygwin)
+	alias ls='ls -F --color=auto --show-control-chars'
+	;;
+esac
+	
 #### man
 if which jman >& /dev/null; then
 	alias man="LC_ALL=ja_JP.eucJP jman"
