@@ -35,13 +35,6 @@ preexec () {
 }
 
 setprompt () {
-	case "$OSTYPE" in
-		cygwin*)
-			export TERM=cygwin
-			;;
-		*)
-			;;
-	esac
 	###
 	# Need this so the prompt will work.
 	setopt prompt_subst
@@ -82,17 +75,22 @@ setprompt () {
 	screen)
 		PR_TITLEBAR=$'%{\e_screen \005 (\005t) | %(!.-=[ROOT]=- | .)%n@%m:%~ | ${COLUMNS}x${LINES} | %y\e\\%}'
 		;;
-	cygwin*)
-		PR_HBAR=-
-		PR_ULCORNER="-"
-		PR_URCORNER="-"
-		PR_LLCORNER="-"
-		PR_LRCORNER="-"
-		;;
 	*)
 		PR_TITLEBAR=''
 		;;
 	esac
+
+	if [[ ${OSTYPE} == cygwin ]]; then
+		PR_HBAR=-
+		PR_ULCORNER=""
+		PR_URCORNER=""
+		PR_LLCORNER=""
+		PR_LRCORNER=""
+		#PR_ULCORNER=${altchar[h]:--}
+		#PR_LLCORNER=${altchar[m]:--}
+		#PR_LRCORNER=${altchar[j]:--}
+		#PR_URCORNER=${altchar[k]:--}
+	fi
 
 	###
 	# Decide whether to set a screen title
