@@ -1,4 +1,4 @@
-export PATH=/usr/local/bin:/opt/local/bin:/opt/local/sbin:$PATH
+#!/usr/bin/zsh
 
 # number of lines kept in history
 export HISTSIZE=10000
@@ -134,8 +134,8 @@ fi
 # %# "
 # Prompt setting {{{
 # RPROMPT=$(echo '%{\033[31m%}%D %T%{\033[m%}')
-# PROMPT=$(echo '%{\033[35m%}%M%{\033[32m%}%/
+PROMPT=$(echo '%{\033[35m%}%M%{\033[32m%}%~
 #%{\033[36m%}%n %{\033[01;31m%}>%{\033[33m%}>%{\033[35m%}>%{\033[m%} ')
-[ "$TERM" = "dumb" ] || . ~/.zshprompt
+# [ "$TERM" = "dumb" ] || . ~/.zshprompt
 # }}}
 

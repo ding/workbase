@@ -1,3 +1,5 @@
+#!/usr/bin/zsh
+
 function precmd {
 	local TERMWIDTH
 	(( TERMWIDTH = ${COLUMNS} - 1 ))
