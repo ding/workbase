@@ -33,14 +33,14 @@ export host=`echo $HOST | sed -e 's/\..*//'`
 export UID
 export SHELL=`which zsh`
 export CC=`which gcc`
-export JLESSCHARSET="japanese"
+#export JLESSCHARSET="japanese"
 #export LC_ALL="ja_JP.eucJP"	# subversionに必要
 #export LC_ALL="C"	# subversionに必要
-export LC_CTYPE="ja_JP.eucJP"	# jman など
+#export LC_CTYPE="ja_JP.eucJP"	# jman など
 #export LC_CTYPE="ja_JP.UTF-8"
 #export LC_CTYPE="ja_JP.EUC"	# ←subversion で接続できなくなる
 #export LANG="C"
-export LANG="ja_JP.eucJP" # vim でエラー：リルが出せない。.vimrc enc で対処
+#export LANG="ja_JP.eucJP" # vim でエラー：リルが出せない。.vimrc enc で対処
 #export LANG="ja_JP.EUC"
 #export LANG="japanese" # vim でエラー：ラリルレロが出せない。
 #export LANG="ja_JP.UTF-8" # or ja_JP.UTF8
@@ -65,10 +65,10 @@ esac
 
 #### EDITOR
 export EDITOR='vi'
-if which vim >& /dev/null ; then	
-    alias vi="LC_ALL=ja_JP.EUC vim"
-    export EDITOR="LC_ALL=ja_JP.EUC vim"
-fi
+#if which vim >& /dev/null ; then	
+#    alias vi="LC_ALL=ja_JP.EUC vim"
+#    export EDITOR="LC_ALL=ja_JP.EUC vim"
+#fi
 
 #### 個人用設定を読み込む
 if [ -e ~/.zshenv_private ]; then
